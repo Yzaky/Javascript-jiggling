@@ -15,6 +15,8 @@ var paddle2Y=250;
 var paddle1Height=100;
 var player1Score=0;
 var player2Score=0;
+var gameScore=3;
+var showScreen=false;
 function getMousePosition(event)
 {
 	var rect=canvas.getBoundingClientRect();
@@ -28,6 +30,15 @@ function getMousePosition(event)
 
 
 }
+function restartGame(event)
+{
+
+	if(showScreen)
+	{
+		player1Score=player2Score=0;
+		showScreen=false;
+	}
+}
 window.onload = function() {
 
 	var fps=30;
@@ -39,6 +50,7 @@ window.onload = function() {
 	drawAll();
 	},1000/fps);
 
+	canvas.addEventListener('mousedown',restartGame);
 	canvas.addEventListener('mousemove',
 		function(event)
 		{
@@ -70,6 +82,9 @@ function computerMovement(){
 	}
 }
 function moveAll(){
+
+	if(showScreen)
+		return;
 	computerMovement();
 	ballX +=ballSpeedX;
 	ballY+=ballSpeedY;
@@ -79,10 +94,13 @@ function moveAll(){
 		if(ballY>paddle1Y && ballY<paddle1Y+paddle1Height)
 		{
 			ballSpeedX=-ballSpeedX;
+			var deltaY=ballY-(paddle1Y+paddle1Height/2);
+			ballSpeedY=deltaY*0.35;
 		}
 		else {
-			resetBall();
 			player2Score+=1;
+			resetBall();
+			
 		}
 	}
 
@@ -92,11 +110,13 @@ function moveAll(){
 		if(ballY>paddle2Y && ballY < paddle2Y+paddle1Height)
 		{
 			ballSpeedX=-ballSpeedX;
-
+			var deltaY=ballY-(paddle2Y+paddle1Height/2);
+			ballSpeedY=deltaY*0.35;
 		}
 		else {
-			resetBall();
 			player1Score+=1;
+			resetBall();
+			
 		}
 	}
 
@@ -109,6 +129,23 @@ function moveAll(){
 
 function drawAll(){
 	colorRect(0,0,canvas.width,canvas.height,"black");
+	if(showScreen)
+
+	{	
+		canvasContext.fillStyle="white";
+		if(player1Score>=gameScore)
+		{
+		canvasContext.fillText("Player A Won",400,200); 
+
+		}
+		else if (player2Score>=gameScore)
+		{
+		canvasContext.fillText("Player B Won",400,200); 
+		}
+		canvasContext.fillText("Click to continue",400,500); 
+
+		return;
+	}
 	colorRect(0,paddle1Y,10,100,"white");
 	canvasContext.fillText("Player A: "+player1Score+ " Player B: "+player2Score,100,100);
 	colorRect(canvas.width-10,paddle2Y,10,100,"white");
@@ -124,6 +161,12 @@ function colorRect(leftX,topY,width,height,drawColor)
 
 function resetBall()
 {
+	if(player1Score>=gameScore || player2Score>=gameScore)
+	{
+
+		showScreen=true;
+	}
+
 	ballSpeedX=-ballSpeedX;
 	ballX=canvas.width/2;
 	ballY=canvas.height/2;
