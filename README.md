@@ -1,2 +1,3 @@
 # Javascript-jiggling
-Just some fun using Javascript &amp; HTML5
+
+An Arcade game only using HTML5 and Javascript.
